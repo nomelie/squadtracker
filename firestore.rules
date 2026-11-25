@@ -2,15 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Only these Google accounts (you + close friends) can use the app.
-    // Add or remove emails here, then click Publish in Firebase > Firestore > Rules.
-   function isFriend() {
-     return request.auth != null &&
-       request.auth.uid in [
-         "USER_UID_qBuCX0DWqaWwrk6WN5yEbA8e7ru1",
-         "USER_UID_DvagVqghDUOsSgBc4GjLMzHGC2g2",
-       ];
-   }
+    // Only emails listed in the "allowed" collection can use the app.
+    function isFriend() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/allowed/$(request.auth.token.email));
+    }
+
     // Public stars: every friend can read, each person edits only their own.
     match /logs/{uid} {
       allow read: if isFriend();
