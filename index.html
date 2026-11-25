@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Squad Tracker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d9480f">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{color-scheme:light;--bg:#fdf1e3;--card:#fffaf4;--ink:#3b2316;--mute:#8e6c58;--line:#efd9c4;--acc:#d9480f;--accsoft:#ffe2cc;--blue:#b45f06;--star:#f59f00;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1f1410;--card:#2b1c15;--ink:#fbeadb;--mute:#c0a08a;--line:#48332a;--acc:#ff8a4c;--accsoft:#4d2b18;--blue:#ffb454}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1f1410;--card:#2b1c15;--ink:#fbeadb;--mute:#c0a08a;--line:#48332a;--acc:#ff8a4c;--accsoft:#4d2b18;--blue:#ffb454}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif}
+button,input{font-family:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:22px;margin:4px 0 12px}
+.tabs{display:flex;gap:6px;background:var(--line);padding:4px;border-radius:12px;margin-bottom:12px}
+.tabs button{flex:1;border:0;background:none;color:var(--mute);padding:9px;border-radius:9px;font-weight:600;font-size:15px}
+.tabs button.on{background:var(--card);color:var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:36px;font-size:18px}
+.nav b{font-size:15px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:12px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 0 4px;text-align:center;color:var(--ink)}
+.day small{display:block;font-size:11px;color:var(--mute)}.day.today small{color:var(--acc);font-weight:700}
+.day svg{display:block;margin:3px auto 0}
+.day.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h2{font-size:17px;margin:0 0 10px}
+input[type=text],input[type=number]{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:16px}
+.stars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.star{border:1px solid var(--line);background:var(--bg);color:var(--mute);border-radius:14px;padding:10px 4px;font-size:13px;font-weight:600}
+.star span{display:block;font-size:30px;line-height:1.1;filter:grayscale(1);opacity:.45}
+.star.on{border-color:var(--star);color:var(--ink);background:var(--card)}
+.star.on span{filter:none;opacity:1}
+.ex{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.exh{display:flex;justify-content:space-between;align-items:center}
+.x{border:0;background:none;color:var(--mute);font-size:18px;padding:2px 8px}
+.last{font-size:13px;color:var(--blue);margin-top:2px}
+.sets{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{background:var(--accsoft);color:var(--acc);border:0;border-radius:999px;padding:5px 11px;font-weight:600;font-size:14px}
+.add{display:flex;gap:6px}.add input{width:30%}
+.btn{border:0;background:var(--acc);color:#fff;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px;white-space:nowrap}
+.mute{color:var(--mute);font-size:13px}
+.seg{display:flex;gap:6px;margin-bottom:12px}
+.seg button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--mute);border-radius:10px;padding:8px;font-weight:600;font-size:14px}
+.seg button.on{background:var(--accsoft);color:var(--acc);border-color:var(--acc)}
+.lb{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.lb:first-of-type{border-top:0}
+.rank{width:30px;text-align:center;font-size:22px}
+.lb .m{flex:1;min-width:0}
+.lb .n{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb .pts{text-align:right;font-weight:800;font-size:20px}.lb .pts small{display:block;font-size:11px;color:var(--mute);font-weight:500}
+.week{display:flex;gap:3px;margin-top:4px}
+.week i{flex:1;text-align:center;font-style:normal;font-size:11px;border-radius:5px;padding:1px 0;background:var(--line);color:var(--mute)}
+.week i.a{background:var(--accsoft);color:var(--acc)}.week i.f{background:var(--star);color:#fff}
+.note{text-align:center;padding:30px 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔥 Squad Tracker</h1>
+  <div style="text-align:center;margin:-6px 0 8px"><span id="msg" class="mute"></span> <button id="sv" class="btn" style="padding:4px 10px;font-size:12px;margin-left:6px">Save now</button></div>
+  <div class="tabs"><button id="tMe" class="on">My week</button><button id="tCrew">Leaderboard</button></div>
+  <div class="nav" id="nav"><button id="prev">‹</button><b id="range"></b><button id="next">›</button></div>
+  <div id="view"></div>
+  <datalist id="exlist"></datalist>
+  <p class="note"><button id="so" class="btn" style="display:none;background:var(--line);color:var(--mute)">Sign out</button></p>
+</div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,initializeFirestore,persistentLocalCache,persistentMultipleTabManager,doc,setDoc,getDoc,collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {firebaseConfig} from "./firebase-config.js";
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+var fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),fs=(function(){try{return initializeFirestore(fbApp,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})})}catch(e){return getFirestore(fbApp)}})(),myName='',authErr='';
+(function(){
+var DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],COL=['#e8590c','#f59f00','#d6336c'];
+var tab='me',range='today',weekStart=monday(new Date()),sel=key(new Date());
+var me=null,pub={},priv={},crew=[],names={},db=null,user=null,booted=false,unsub=null,tP=null,tU=null,ready=false;
+
+function monday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-(x.getDay()+6)%7);return x}
+function key(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function weekKeys(){var a=[];for(var i=0;i<7;i++)a.push(key(addDays(weekStart,i)));return a}
+function el(t,c,txt){var e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e}
+function pd(k){return pub[k]||(pub[k]={w:false,s:false,p:false})}
+function ud(k){return priv[k]||(priv[k]={n:'',ex:[]})}
+function pts(d){return d?(d.w===true?1:0)+(d.s===true?1:0)+(d.p===true?1:0):0}
+function lc(s){return String(s||'').trim().toLowerCase()}
+
+function flag(m){var e=document.getElementById('msg');if(e)e.textContent=m||''}
+function enc(){var o={};Object.keys(priv).forEach(function(k){var d=priv[k];o[k]={n:d.n||'',ex:(d.ex||[]).map(function(x){return{n:x.n,sets:(x.sets||[]).map(function(t){return{w:t[0],r:t[1]}})}})}});return o}
+function dec(o){var r={};Object.keys(o||{}).forEach(function(k){var d=o[k];r[k]={n:d.n||'',ex:(d.ex||[]).map(function(x){return{n:x.n,sets:(x.sets||[]).map(function(t){return Array.isArray(t)?t:[t.w,t.r]})}})}});return r}
+var pendP=false,pendU=false;
+function fail(e){flag('Could not save ('+((e&&e.code)||'error')+')')}
+function doP(){pendP=false;if(!db||!me)return;setDoc(doc(fs,'logs',me),{name:myName,days:pub,t:Date.now()}).then(function(){flag('Saved ✓')}).catch(fail)}
+function doU(){pendU=false;if(!db||!me)return;setDoc(doc(fs,'users',me,'private','workouts'),{days:enc()}).then(function(){flag('Saved ✓')}).catch(fail)}
+function saveP(){pendP=true;flag('Saving…');clearTimeout(tP);tP=setTimeout(doP,100)}
+function saveU(){pendU=true;flag('Saving…');clearTimeout(tU);tU=setTimeout(doU,400)}
+function flush(){if(pendP){clearTimeout(tP);doP()}if(pendU){clearTimeout(tU);doU()}}
+document.addEventListener('visibilitychange',function(){if(document.hidden)flush()});window.addEventListener('pagehide',flush);
+
+function lastFor(name,before){
+  var n=lc(name),ks=Object.keys(priv).filter(function(k){return k<before}).sort().reverse();
+  for(var i=0;i<ks.length;i++){var ex=(priv[ks[i]].ex||[]).filter(function(e){return lc(e.n)===n&&e.sets&&e.sets.length})[0];if(ex)return{k:ks[i],sets:ex.sets}}
+  return null;
+}
+function ring(d,sz){
+  var ns='http://www.w3.org/2000/svg',s=document.createElementNS(ns,'svg');
+  s.setAttribute('width',sz*1.15);s.setAttribute('height',sz*1.15);s.setAttribute('viewBox','0 0 40 40');
+  ['w','s','p'].forEach(function(f,i){
+    var R=[18.5,12.2,6.2][i],p=[];
+    for(var j=0;j<10;j++){var r=j%2?R*.48:R,a=-Math.PI/2+j*Math.PI/5;p.push((20+r*Math.cos(a)).toFixed(1)+','+(21.5+r*Math.sin(a)).toFixed(1))}
+    var g=document.createElementNS(ns,'polygon');g.setAttribute('points',p.join(' '));
+    g.setAttribute('fill','none');g.setAttribute('stroke-width',2.6);g.setAttribute('stroke-linejoin','round');
+    g.setAttribute('stroke',d&&d[f]===true?COL[i]:'#8885');s.appendChild(g);
+  });
+  return s;
+}
+
+function render(){
+  var v=document.getElementById('view');v.textContent='';
+  var ks=weekKeys();
+  document.getElementById('range').textContent=addDays(weekStart,0).toLocaleDateString(undefined,{month:'short',day:'numeric'})+' – '+addDays(weekStart,6).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  document.getElementById('nav').style.display=tab==='me'?'flex':'none';
+  document.getElementById('tMe').className=tab==='me'?'on':'';
+  document.getElementById('tCrew').className=tab==='crew'?'on':'';
+  if(!db){var lc2=el('div','card note');lc2.appendChild(el('p',null,'Sign in with Google to track your stars and join the crew.'));
+    var lb=el('button','btn','Sign in with Google');lb.onclick=function(){authErr='';signInWithPopup(auth,new GoogleAuthProvider()).catch(function(e){authErr=e.code;render()})};
+    lc2.appendChild(lb);if(authErr)lc2.appendChild(el('p','mute','Sign-in failed ('+authErr+'). Check that your email is on the friends list and this domain is authorized in Firebase.'));v.appendChild(lc2);return}
+  if(!ready){v.appendChild(el('div','card note','Loading…'));return}
+  var dl=document.getElementById('exlist');dl.textContent='';
+  var seen={};Object.keys(priv).forEach(function(k){(priv[k].ex||[]).forEach(function(e){if(!seen[lc(e.n)]){seen[lc(e.n)]=1;var o=el('option');o.value=e.n;dl.appendChild(o)}})});
+  tab==='me'?renderMe(v,ks):renderBoard(v,ks);
+}
+
+function renderMe(v,ks){
+  var strip=el('div','days'),today=key(new Date());
+  if(ks.indexOf(sel)<0)sel=ks[0];
+  ks.forEach(function(k,i){
+    var b=el('button','day'+(k===sel?' sel':'')+(k===today?' today':''));
+    b.appendChild(el('small',null,DN[i]+' '+(+k.slice(8))));b.appendChild(ring(pub[k],34));
+    b.onclick=function(){sel=k;render()};strip.appendChild(b);
+  });
+  v.appendChild(strip);
+  var p=pd(sel),u=ud(sel),c=el('div','card');
+  c.appendChild(el('h2',null,new Date(sel+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})+' · '+pts(p)+'/3 ⭐'));
+  var st=el('div','stars');
+  [['w','Workout'],['s','Steps 6–8k'],['p','Protein']].forEach(function(a){
+    var b=el('button','star'+(p[a[0]]?' on':''));b.appendChild(el('span',null,'⭐'));b.appendChild(document.createTextNode(a[1]));
+    b.onclick=function(){p[a[0]]=!p[a[0]];saveP();render()};st.appendChild(b);
+  });
+  c.appendChild(st);
+  var wi=el('input');wi.type='text';wi.placeholder='Workout name (private)';wi.value=u.n||'';
+  wi.oninput=function(){u.n=wi.value;saveU()};c.appendChild(wi);
+  (u.ex||[]).forEach(function(ex,ei){
+    var box=el('div','ex'),h=el('div','exh');h.appendChild(el('b',null,ex.n));
+    var x=el('button','x','✕');x.onclick=function(){u.ex.splice(ei,1);saveU();render()};h.appendChild(x);box.appendChild(h);
+    var last=lastFor(ex.n,sel);
+    if(last){box.appendChild(el('div','last','Last time ('+new Date(last.k+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})+'): '+last.sets.map(function(s){return s[0]+'×'+s[1]}).join(' · ')+' → aim for +1 rep or a small weight bump'))}
+    var sets=el('div','sets');
+    ex.sets.forEach(function(s,si){var ch=el('button','chip',s[0]+' × '+s[1]);ch.onclick=function(){ex.sets.splice(si,1);saveU();render()};sets.appendChild(ch)});
+    box.appendChild(sets);
+    var ref=last?last.sets[Math.min(ex.sets.length,last.sets.length-1)]:null;
+    var a=el('div','add'),w=el('input'),r=el('input'),ab=el('button','btn','+ Set');
+    w.type='number';w.inputMode='decimal';w.placeholder=ref?String(ref[0]):'Weight';
+    r.type='number';r.inputMode='numeric';r.placeholder=ref?String(ref[1]):'Reps';
+    ab.onclick=function(){if(w.value===''||r.value==='')return;ex.sets.push([+w.value,+r.value]);if(!p.w){p.w=true;saveP()}saveU();render()};
+    a.appendChild(w);a.appendChild(r);a.appendChild(ab);box.appendChild(a);c.appendChild(box);
+  });
+  var na=el('div','add');na.style.marginTop='14px';
+  var ni=el('input');ni.type='text';ni.placeholder='Add exercise (e.g. Bench press)';ni.setAttribute('list','exlist');ni.style.width='100%';
+  var nb=el('button','btn','+ Add');
+  nb.onclick=function(){var n=ni.value.trim();if(!n)return;u.ex=u.ex||[];u.ex.push({n:n,sets:[]});saveU();render()};
+  na.appendChild(ni);na.appendChild(nb);c.appendChild(na);
+  c.appendChild(el('p','mute','🔒 Exercises, sets and weights are private. Friends only see your ⭐ points. Logging a set auto-awards the workout star.'));
+  v.appendChild(c);
+}
+
+function renderBoard(v,ks){
+  var seg=el('div','seg');
+  [['today','Today'],['week','This week'],['all','All time']].forEach(function(a){
+    var b=el('button',range===a[0]?'on':'',a[1]);b.onclick=function(){range=a[0];render()};seg.appendChild(b)});
+  v.appendChild(seg);
+  var today=key(new Date());
+  var list=crew.map(function(c){
+    var days=(c.data&&c.data.days)||{},tot=0,perfect=0;
+    var keys=range==='today'?[today]:range==='week'?ks:Object.keys(days);
+    keys.forEach(function(k){var n=pts(days[k]);tot+=n;if(n===3)perfect++});
+    return{id:c.id,days:days,pts:tot,perfect:perfect,max:keys.length*3};
+  });
+  list.sort(function(a,b){return b.pts-a.pts||b.perfect-a.perfect||(names[a.id]||'').localeCompare(names[b.id]||'')});
+  if(!list.length){v.appendChild(el('div','card note','No one has logged yet. Check off a star to get on the board!'));return}
+  var card=el('div','card'),medals=['🥇','🥈','🥉'],prev=null,rk=0;
+  list.forEach(function(c,i){
+    if(c.pts!==prev){rk=i;prev=c.pts}
+    var row=el('div','lb'),r=el('div','rank',rk<3&&c.pts>0?medals[rk]:String(rk+1));
+    var m=el('div','m'),nm=(names[c.id]||'Friend')+(c.id===me?' (you)':'');
+    m.appendChild(el('div','n',nm));
+    var w=el('div','week');
+    ks.forEach(function(k,j){var n=pts(c.days[k]);w.appendChild(el('i',n===3?'f':n>0?'a':'',DN[j][0]+(n?n:'')))});
+    m.appendChild(w);
+    var pt=el('div','pts',c.pts+' ⭐');pt.appendChild(el('small',null,c.perfect+' perfect day'+(c.perfect===1?'':'s')));
+    row.appendChild(r);row.appendChild(m);row.appendChild(pt);card.appendChild(row);
+  });
+  v.appendChild(card);
+  v.appendChild(el('p','mute','1 ⭐ per checkbox (workout, steps, protein). 3 ⭐ = a perfect day. The row shows this week, one cell per day.'));
+}
+
+document.getElementById('tMe').onclick=function(){tab='me';render()};
+document.getElementById('tCrew').onclick=function(){tab='crew';render()};
+document.getElementById('prev').onclick=function(){weekStart=addDays(weekStart,-7);sel=key(weekStart);render()};
+document.getElementById('next').onclick=function(){weekStart=addDays(weekStart,7);sel=key(weekStart);render()};
+render();
+
+function busy(){var a=document.activeElement;return a&&a.tagName==='INPUT'}
+document.getElementById('so').onclick=function(){flush();signOut(auth)};
+document.getElementById('sv').onclick=function(){clearTimeout(tP);clearTimeout(tU);flag('Saving…');doP();doU()};
+onAuthStateChanged(auth,async function(u){
+  if(unsub){unsub();unsub=null}
+  document.getElementById('so').style.display=u?'inline-block':'none';
+  if(!u){db=null;me=null;ready=false;pub={};priv={};crew=[];render();return}
+  me=u.uid;myName=u.displayName||(u.email||'').split('@')[0]||'Friend';db=true;ready=false;render();
+  try{
+    var ps=await getDoc(doc(fs,'users',me,'private','workouts'));
+    priv=dec((ps.exists()&&ps.data().days)||{});
+    var first=true;
+    unsub=onSnapshot(collection(fs,'logs'),function(snap){
+      crew=snap.docs.map(function(d){return{id:d.id,data:d.data()}});
+      crew.forEach(function(c){names[c.id]=(c.data&&c.data.name)||''});
+      if(first){first=false;var mine=crew.filter(function(c){return c.id===me})[0];pub=JSON.parse(JSON.stringify((mine&&mine.data&&mine.data.days)||{}));ready=true}
+      if(!busy())render();
+    },function(e){authErr=e.code;db=null;render()});
+  }catch(e){authErr=e.code||'error';db=null;render()}
+});
+render();
+})();
+</script>
+</body>
+</html>

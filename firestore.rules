@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only these Google accounts (you + close friends) can use the app.
+    // Add or remove emails here, then click Publish in Firebase > Firestore > Rules.
+   function isFriend() {
+     return request.auth != null &&
+       request.auth.uid in [
+         "USER_UID_qBuCX0DWqaWwrk6WN5yEbA8e7ru1",
+         "USER_UID_DvagVqghDUOsSgBc4GjLMzHGC2g2",
+       ];
+   }
+    // Public stars: every friend can read, each person edits only their own.
+    match /logs/{uid} {
+      allow read: if isFriend();
+      allow write: if isFriend() && request.auth.uid == uid;
+    }
+
+    // Private workout details: only the owner can read or write.
+    match /users/{uid}/{document=**} {
+      allow read, write: if isFriend() && request.auth.uid == uid;
+    }
+  }
+}
